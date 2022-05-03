@@ -41,7 +41,7 @@
 	 Token   No :41  |            0  ------->  |                  Integer    
 	 Token   No :42  |            ;  ------->  |           Special Symbol    
 	 Token   No :43  |         cout  ------->  |                 Variable ,  POINTER TO SYMBOL TABLE    
-	 Token   No :44  |           <<  ------->  |                 Operator ,   EXTR    
+	 Token   No :44  |           <<  ------->  |                 Operator ,  EXTR    
 	 Token   No :45  |            c  ------->  |                 Variable ,  POINTER TO SYMBOL TABLE    
 	 Token   No :46  |            ;  ------->  |           Special Symbol    
 	 Token   No :47  |       return  ------->  |                 Keywords    
