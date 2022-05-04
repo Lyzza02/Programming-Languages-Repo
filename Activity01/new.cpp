@@ -256,7 +256,7 @@ string tell_Lexeme(string op) {
 
 int main() {
 
-  cout << "\n [1.]  Sir Hadji Version.2\n\n" ;
+  cout << "\n [1.]  Sir Hadji Pogi Version.2\n\n" ;
 
     ifstream file("prog.txt");
     string x;
