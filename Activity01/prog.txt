@@ -1,11 +1,9 @@
-#include <iostream>
-using namespace std;
-int main (){
-    int a,b,c,d;
-    a = 1;
-    b = 2;
-    c = 3;
-    d = a+b+c;
-    cout<<d;
-    return 0;
+# include < iostream > 
+using namespace std ; 
+int main () {
+    int a = 22;
+    cout << 4+5;
+    cout << 6-7;
+    cout << 8/9*10;
+    return 0 ;
 }

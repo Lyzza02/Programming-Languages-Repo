@@ -22,7 +22,7 @@ int main (){
 	list<string> constants = list<string>();
 	
 	//getting the words from the text files
-    ifstream file("prog.txt");
+    ifstream file("inp.txt");
     string x;
     string code = "";
 
@@ -40,7 +40,7 @@ int main (){
 	string s = "";
 	//reading per character
 	for(int i = 0; i<code.size(); i++){
-		if(code[i] != ' '){
+		if(code[i] != ' ' && code[i] != '\r'){
             s += code[i];
         }
 		else {
