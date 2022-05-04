@@ -40,7 +40,7 @@ int main (){
 	string s = "";
 	//reading per character
 	for(int i = 0; i<code.size(); i++){
-		if(code[i] != ' '){
+		if(code[i] != ' ' && code[i] != '\r'){
             s += code[i];
         }
 		else {
