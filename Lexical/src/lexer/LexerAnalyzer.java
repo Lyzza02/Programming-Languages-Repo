@@ -104,7 +104,8 @@ class Lexer{
     private final String TT_INT = "INT";
     private final String TT_FLOAT = "FLOAT";
     private final String TT_PLUS = "PLUS";
-    private final String TT_MUL = "MINUS";
+    private final String TT_MINUS = "MINUS";
+    private final String TT_MUL = "MUL";
     private final String TT_DIV = "DIV";
     private final String TT_LPAREN  = "LPAREN";
     private final String TT_RPAREN  = "RPAREN";
