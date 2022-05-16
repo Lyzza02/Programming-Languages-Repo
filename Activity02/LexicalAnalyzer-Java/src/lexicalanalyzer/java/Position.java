@@ -30,3 +30,4 @@ public class Position {
        Position p = new Position(this.idx, this.ln, this.col, this.fn, this.ftxt);
        return p;
    }
+}
