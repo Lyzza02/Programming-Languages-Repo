@@ -1,6 +1,9 @@
 
 package lexer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 public class LexerAnalyzer{
@@ -107,6 +110,13 @@ class Position {
 //# LEXER
 //#######################################
 class Lexer{
+    private final String TT_INT = "INT";
+    private final String TT_FLOAT = "FLOAT";
+    private final String TT_PLUS = "PLUS";
+    private final String TT_MUL = "MINUS";
+    private final String TT_DIV = "DIV";
+    private final String TT_LPAREN  = "LPAREN";
+    private final String TT_RPAREN  = "RPAREN";
     Position p = new Position();
    
     
@@ -121,40 +131,46 @@ class Lexer{
         self.pos.advance(self.current_char)
         self.current_char = self.text[self.pos.idx] if self.pos.idx < len(self.text) else None
 
-    def make_tokens(self):
-        tokens = []
-
-        while self.current_char != None:
-            if self.current_char in ' \t':
-                self.advance()
-            elif self.current_char in DIGITS:
-                tokens.append(self.make_number())
-            elif self.current_char == '+':
-                tokens.append(Token(TT_PLUS))
-                self.advance()
-            elif self.current_char == '-':
-                tokens.append(Token(TT_MINUS))
-                self.advance()
-            elif self.current_char == '*':
-                tokens.append(Token(TT_MUL))
-                self.advance()
-            elif self.current_char == '/':
-                tokens.append(Token(TT_DIV))
-                self.advance()
-            elif self.current_char == '(':
-                tokens.append(Token(TT_LPAREN))
-                self.advance()
-            elif self.current_char == ')':
-                tokens.append(Token(TT_RPAREN))
-                self.advance()
-            else:
+    public Lexer make_tokens(){
+        Lexer l = new Lexer (this.fn, this.text);
+        
+        List <String> tokens = new ArrayList <String>();
+        
+        while (this.current_char != null){
+            if (current_char == "\t"){
+                advance();
+            } else if (isDigit(current_char)){
+                tokens.add(make_number());
+            } else if (current_char == "+"){
+                tokens.add(Token(TT_PLUS));
+                advance();
+            } else if (current_char == "-"){
+                tokens.add(Token(TT_MINUS));
+                advance();
+            } else if (current_char == "*"){
+                tokens.add(Token(TT_MUL));
+                advance();
+            } else if (current_char == "/"){
+                tokens.add(Token(TT_DIV));
+                advance();
+            } else if (current_char == "("){
+                tokens.add(Token(TT_LPAREN));
+                advance();
+            } else if (current_char == ")"){
+                tokens.add(Token(TT_RPAREN));
+                advance();
+            } 
+            
+            else {
                 pos_start = self.pos.copy()
                 char = self.current_char
                 self.advance()
                 return [], IllegalCharError(pos_start, self.pos, "'" + char + "'")
-
+            }
+        }
         return tokens, None
-
+    }
+    
     def make_number(self):
         num_str = ''
         dot_count = 0
@@ -172,11 +188,11 @@ class Lexer{
             return Token(TT_INT, int(num_str))
         else:
             return Token(TT_FLOAT, float(num_str))
-            
+                        
             
             
 
-            
+      
 }
 //#######################################
 //# RUN
