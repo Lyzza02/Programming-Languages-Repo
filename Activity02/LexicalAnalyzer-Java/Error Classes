@@ -1,0 +1,29 @@
+// ERRORS
+class Error {
+    Position pos_start;
+    Position pos_end;
+    String error_name;
+    String details;
+
+    public Error(Position pos_start, Position pos_end, String error_name, String details) {
+        this.pos_start = pos_start;
+        this.pos_end = pos_end;
+        this.error_name = error_name;
+        this.details = details;
+    }
+
+    String as_string() {
+        String result = String.format("%s: %s\n", this.error_name, this.details);
+        result += String.format("File %s, line %d", pos_start.fn, pos_start.ln + 1);
+
+        return result;
+    }
+}
+
+class IllegalCharError extends Error {
+
+    public IllegalCharError(Position pos_start, Position pos_end, String details) {
+        super(pos_start, pos_end, "Illegal Character", details);
+    }
+
+}
