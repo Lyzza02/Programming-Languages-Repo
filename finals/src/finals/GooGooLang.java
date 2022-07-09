@@ -33,17 +33,14 @@ public class GooGooLang extends javax.swing.JFrame {
 
    //Declare Global Dictionary for storing variables 
    Dictionary dictionary = new Hashtable();
-   
    //Declare Global input counting variable
    int input_count = 0;
-   
    //Declare Global variable counter
    int var_count=0;
-   
    //Declare Global string data for output_code
    StringBuilder output_data = new StringBuilder("\\={ GooGooLang }=/\n\n"); 
-   public void text_data(String str){
-       output_code.append(output_data.append(str).toString());
+   public void clear_text(){
+       output_code.setText("");
    }
 
    
@@ -55,12 +52,15 @@ public class GooGooLang extends javax.swing.JFrame {
     //}else{ typchecking(); 
     
    }
+  
    
-
+   
    public void input(String var_name,int var_value) throws BadLocationException{
        
         String input_message = "input integer value for variable "+var_name+":  ";
-        text_data(input_message);
+        output_data.append(input_message);
+        String string = output_data.toString();
+        output_code.append(string);
   
         // Start of Highlight 
         String term = "  ";
@@ -70,22 +70,24 @@ public class GooGooLang extends javax.swing.JFrame {
         new DefaultHighlighter.DefaultHighlightPainter(Color.white);
         output_code.setForeground(Color.PINK);
 
-        int p0 = output_code.toString().indexOf(term);
-        int p1 = p0 + output_code.toString().length();
+        int p0 = string.indexOf(term);
+        int p1 = p0 + string.length();
     
         highlighter.addHighlight(p0, p1, painter );
        // End of Highlight 
        
         String input_data;
-        input_data = JOptionPane.showInputDialog(null,
-         input_message);
-      
-        text_data(input_message);
+        input_data = JOptionPane.showInputDialog(null,input_message);
+        
+        clear_text();
+        output_code.append(output_data.append(input_data).toString());
         
         var(var_name,Integer.parseInt(input_data));
-        System.out.println("variable "+var_name+" assigned valuev"+dictionary.get(var_name));
-        text_data("variable "+var_name+" assigned valuev"+dictionary.get(var_name));
+        output_code.setHighlighter(null);
+        output_code.setForeground(Color.PINK);
+        output_code.setBackground(Color.BLACK);
         
+   
     
    }
          
