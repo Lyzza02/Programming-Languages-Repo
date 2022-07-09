@@ -1,1 +1,0 @@
-NOTE: mga galing sa internet
