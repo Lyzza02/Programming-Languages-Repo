@@ -39,9 +39,13 @@ public class GooGooLang extends javax.swing.JFrame {
    int var_count=0;
    //Declare Global string data for output_code
    StringBuilder output_data = new StringBuilder("\\={ GooGooLang }=/\n\n"); 
-   public void clear_text(){
-       output_code.setText("");
+   //prompt every input keyword
+   public String input_prompt(String msg){
+       String input_data;
+        input_data = JOptionPane.showInputDialog(null,msg);
+        return input_data;
    }
+   
 
    
    public void var(String var_name, int var_value){
@@ -55,44 +59,27 @@ public class GooGooLang extends javax.swing.JFrame {
   
    
    
-   public void input(String var_name,int var_value) throws BadLocationException{
+  public void input(String var_name,String var_value) {
        
-        String input_message = "input integer value for variable "+var_name+":  ";
+        String input_message = "\ninput integer value for variable "+var_name+":  ";
         output_data.append(input_message);
         String string = output_data.toString();
         output_code.append(string);
-  
-        // Start of Highlight 
-        String term = "  ";
         
-        Highlighter highlighter = output_code.getHighlighter();
-        Highlighter.HighlightPainter painter = 
-        new DefaultHighlighter.DefaultHighlightPainter(Color.white);
-        output_code.setForeground(Color.PINK);
-
-        int p0 = string.indexOf(term);
-        int p1 = p0 + string.length();
     
-        highlighter.addHighlight(p0, p1, painter );
-       // End of Highlight 
-       
-        String input_data;
-        input_data = JOptionPane.showInputDialog(null,input_message);
-        
-        clear_text();
-        output_code.append(output_data.append(input_data).toString());
-        
-        var(var_name,Integer.parseInt(input_data));
+      
+        output_code.setText("");
+        output_data.append(var_value);
+        string = output_data.toString();
+        output_code.append(string);
+     
         output_code.setHighlighter(null);
         output_code.setForeground(Color.PINK);
         output_code.setBackground(Color.BLACK);
-        
-   
-    
+  
    }
          
          
-  
 //>output(string output){
 // - call typechecking();
 // - print 
@@ -102,12 +89,12 @@ public class GooGooLang extends javax.swing.JFrame {
 //	  output age1 + age2;
 //	  output_code "25"
 
-    public void output(String var_name, int var_value){
-   //if(typechecking){
-      System.out.println("Variable "+var_name+ " has value "+dictionary.get(var_name));
+    public void output(String var_name){
+    //if(typechecking){
+       System.out.println("Variable "+var_name+ " has value "+dictionary.get(var_name));
     //}else{ typchecking(); 
-    String add = dictionary.get(var_name).toString();
-    output_data.append(add);
+    String add = "\nOutput variable "+var_name+" : "+dictionary.get(var_name).toString();
+    output_code.append(add);
    }
     
  
@@ -154,7 +141,7 @@ public class GooGooLang extends javax.swing.JFrame {
 
         input_code.setColumns(20);
         input_code.setRows(5);
-        input_code.setText("var in = 2;\nvar out;\ninput out;\nvar sum;\nsum = in + out;\noutput sum;");
+        input_code.setText("var in = 2;\nvar out;\nvar red;\ninput red;\ninput out;\nvar sum;\nsum = in + out;\noutput sum;");
         jScrollPane1.setViewportView(input_code);
 
         jTabbedPane3.addTab("GooInput", jScrollPane1);
@@ -269,7 +256,7 @@ public class GooGooLang extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void run_btnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_run_btnMouseClicked
-
+    output_code.setText("\\={ GooGooLang }=/\n\n");
         //if(typechecking){
         
         String string = input_code.getText();
@@ -306,34 +293,56 @@ public class GooGooLang extends javax.swing.JFrame {
               String no_blank = statements[line].replaceAll("\\s+", "");  
               System.out.println(no_blank); 
               
-              //Removes 'var', '=', and ';'
+              //Removes 'input', '=', and ';'
               String[] input_value = no_blank.split("input|=|;");
-                //calls input() by condition
                 
-                if(input_value[1].isBlank()==false)
-                  try {
-                      input(input_value[1],Integer.parseInt(input_value[2]));
-              } catch (BadLocationException ex) {
-                  Logger.getLogger(GooGooLang.class.getName()).log(Level.SEVERE, null, ex);
-              }
-                else
-                  try {
-                      input(input_value[2],0);
-              } catch (BadLocationException ex) {
-                  Logger.getLogger(GooGooLang.class.getName()).log(Level.SEVERE, null, ex);
-              }        
-             }
+                 
+                String string_input = (input_prompt("input integer value for variable "+input_value[2]+":  "));
+                int int_input = Integer.parseInt(string_input);
+                
              
-             
-             
-             
-             
-             
-             
+                //calls input()
+                input(input_value[2],string_input);
+          
+               
+                 var(input_value[2],int_input);
+                 
+              } 
+              
+              if(statements[line].contains("output")){
+
+              //remove whitespaces
+              String no_blank = statements[line].replaceAll("\\s+", "");  
+              System.out.println(no_blank); 
+              
+              //Removes 'output', '=', and ';'
+              String[] output_value = no_blank.split("output|=|;");
+                
+               output(output_value[2]);
+                 
+              }  
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
+              
              
         }
         
         //}
+
 
 
 
