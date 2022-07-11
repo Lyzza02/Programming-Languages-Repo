@@ -150,7 +150,7 @@
                       <Properties>
                         <Property name="columns" type="int" value="20"/>
                         <Property name="rows" type="int" value="5"/>
-                        <Property name="text" type="java.lang.String" value="var in = 2;&#xa;var out;&#xa;var red;&#xa;input red;&#xa;input out;&#xa;var sum;&#xa;sum = in + out;&#xa;output sum;"/>
+                        <Property name="text" type="java.lang.String" value="var a = 2;&#xa;var c = 2;&#xa;var b = 2;&#xa;var math; &#xa;math = a + b + c;&#xa;output math;"/>
                       </Properties>
                     </Component>
                   </SubComponents>

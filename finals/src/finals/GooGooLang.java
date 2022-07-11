@@ -21,6 +21,7 @@ import javax.swing.text.Highlighter;
  *
  * @author 10017
  */
+@SuppressWarnings("unchecked")
 public class GooGooLang extends javax.swing.JFrame {
 
     /**
@@ -29,8 +30,10 @@ public class GooGooLang extends javax.swing.JFrame {
     public GooGooLang() {
         initComponents();
     }
-
-
+/*
+ *    START OF GLOBAL  VARIABLE DECLARATIONS  
+ * 
+ */
    //Declare Global Dictionary for storing variables 
    Dictionary dictionary = new Hashtable();
    //Declare Global input counting variable
@@ -38,16 +41,13 @@ public class GooGooLang extends javax.swing.JFrame {
    //Declare Global variable counter
    int var_count=0;
    //Declare Global string data for output_code
-   StringBuilder output_data = new StringBuilder("\\={ GooGooLang }=/\n\n"); 
-   //prompt every input keyword
-   public String input_prompt(String msg){
-       String input_data;
-        input_data = JOptionPane.showInputDialog(null,msg);
-        return input_data;
-   }
+   public static int prev=2147483647;
    
+/*
+ *    END OF GLOBAL  VARIABLE DECLARATIONS  
+ * 
+ */   
 
-   
    public void var(String var_name, int var_value){
    
    //if(typechecking){
@@ -56,49 +56,81 @@ public class GooGooLang extends javax.swing.JFrame {
     //}else{ typchecking(); 
     
    }
-  
    
-   
-  public void input(String var_name,String var_value) {
+   //prompt every input keyword
+   public String input_prompt(String msg){
+       String input_data;
+        input_data = JOptionPane.showInputDialog(null,msg);
+        return input_data;
+   }
+   //input keyword
+    public void input(String var_name,String var_value) {
        
         String input_message = "\ninput integer value for variable "+var_name+":  ";
-        output_data.append(input_message);
-        String string = output_data.toString();
-        output_code.append(string);
-        
-    
-      
-        output_code.setText("");
-        output_data.append(var_value);
-        string = output_data.toString();
-        output_code.append(string);
+        output_code.append(input_message+var_value);
      
-        output_code.setHighlighter(null);
         output_code.setForeground(Color.PINK);
         output_code.setBackground(Color.BLACK);
-  
    }
          
-         
-//>output(string output){
-// - call typechecking();
-// - print 
-//}
-//  sample: var age1 = 12;
-//	  var age2 = 13;
-//	  output age1 + age2;
-//	  output_code "25"
-
     public void output(String var_name){
     //if(typechecking){
-       System.out.println("Variable "+var_name+ " has value "+dictionary.get(var_name));
+    System.out.println("Variable "+var_name+ " has value "+dictionary.get(var_name));
     //}else{ typchecking(); 
     String add = "\nOutput variable "+var_name+" : "+dictionary.get(var_name).toString();
     output_code.append(add);
    }
     
- 
     
+   //manipulate prev value for operations
+   public int get_prev(int cur,String op){
+       if(prev==2147483647)
+           prev=cur;
+       else {
+           switch (op){
+               case "+":
+                   return prev=prev+cur;
+                   
+               case "-":
+                   return prev=prev-cur;
+                   
+               case "*":
+                   return prev=prev*cur;
+                   
+               case "/":
+                   return prev=prev/cur;
+           }
+       }
+   return prev;
+   }
+    //operations
+    public void operations(String var_name,String op){
+      int cur = Integer.parseInt(dictionary.get(var_name).toString());
+      System.out.println("prev : "+prev);  
+      System.out.println(var_name+" : "+cur);  
+
+        if(op.equals("=")){
+               System.out.println(var_name+" : "+prev);  
+               dictionary.put(var_name,prev);
+
+           }else{   
+                if(prev==2147483647){
+                    prev =  cur;  
+                }else{
+                    get_prev(cur,op);
+                } 
+           }      
+       }
+    
+    public static String check_var(String text) {
+        try {
+            Integer.parseInt(text);
+            return "number";
+          } catch (NumberFormatException e) {
+            return text;
+        }
+    }
+ 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -141,7 +173,7 @@ public class GooGooLang extends javax.swing.JFrame {
 
         input_code.setColumns(20);
         input_code.setRows(5);
-        input_code.setText("var in = 2;\nvar out;\nvar red;\ninput red;\ninput out;\nvar sum;\nsum = in + out;\noutput sum;");
+        input_code.setText("var a = 2;\nvar c = 2;\nvar b = 2;\nvar math; \nmath = a + b + c;\noutput math;");
         jScrollPane1.setViewportView(input_code);
 
         jTabbedPane3.addTab("GooInput", jScrollPane1);
@@ -256,106 +288,130 @@ public class GooGooLang extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void run_btnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_run_btnMouseClicked
-    output_code.setText("\\={ GooGooLang }=/\n\n");
-        //if(typechecking){
-        
+ output_code.setText("\\={ GooGooLang }=/\n\n");
+ prev=2147483647;
+ int cnt_back=0;
+         //if(typechecking){
+       
         String string = input_code.getText();
+        
         //Split string line with ';'
         String[] statements = string.split("(?=;)");
         
-        
         for (int line = 0; line<statements.length;line++) {
-             
+            
+            
             System.out.println(statements[line]);
              
+            //Var Keyword
              if(statements[line].contains("var")){
-              //add 1 & print variable count   
-              var_count+=1;
-              System.out.println("variable# "+var_count);
-              //remove whitespaces
-              String no_blank = statements[line].replaceAll("\\s+", "");  
-              System.out.println(no_blank); 
-              //Removes 'var', '=', and ';'
-              String[] var_value = no_blank.split("var|=|;");
+                //add 1 & print variable count   
+                var_count+=1;
+                System.out.println("variable# "+var_count);
+                //remove whitespaces
+                String no_blank = statements[line].replaceAll("\\s+", "");  
+                String no_semi = no_blank.replaceAll(";", "");
+                
+                System.out.println(no_blank); 
+                //Removes 'var', '=', and ';'
+                String[] var_value = no_semi.split("var|=|;");
                 //calls var() by condition
-                if(var_value[1].isBlank()==false)
+                if(var_value.length>2)
                   var(var_value[1],Integer.parseInt(var_value[2]));
                 else
-                  var(var_value[2],0);     
-             }
-             
+                  var(var_value[1],0);
+             }            
+             //Input Keyword
               if(statements[line].contains("input")){
-              input_count+=1;    
-              //add 1 annd print input count    
-              System.out.println("input# "+input_count);
-              
-              //remove whitespaces
-              String no_blank = statements[line].replaceAll("\\s+", "");  
-              System.out.println(no_blank); 
-              
-              //Removes 'input', '=', and ';'
-              String[] input_value = no_blank.split("input|=|;");
+                input_count+=1;    
+                //add 1 annd print input count    
+                System.out.println("input# "+input_count);
+
+                //remove whitespaces
+                String no_blank = statements[line].replaceAll("\\s+", "");  
+                System.out.println(no_blank); 
+
+                //Removes 'input', '=', and ';'
+                String[] input_value = no_blank.split("input|=|;");
                 
-                 
+                //input string for input() -->to show in console
                 String string_input = (input_prompt("input integer value for variable "+input_value[2]+":  "));
+                //input int for var() --> for operations/other functions
                 int int_input = Integer.parseInt(string_input);
                 
-             
                 //calls input()
+                //input_value[2] --> variable name
                 input(input_value[2],string_input);
-          
-               
+                 //calls var() to store input value
                  var(input_value[2],int_input);
-                 
               } 
               
+              //output keyword
               if(statements[line].contains("output")){
+                //remove whitespaces
+                String no_blank = statements[line].replaceAll("\\s+", "");  
+                System.out.println(no_blank); 
 
-              //remove whitespaces
-              String no_blank = statements[line].replaceAll("\\s+", "");  
-              System.out.println(no_blank); 
+                //Removes 'output', '=', and ';'
+                String[] output_value = no_blank.split("output|=|;");
+                 //calls output() to display variable value 
+                 output(output_value[2]);
+              }               
               
-              //Removes 'output', '=', and ';'
-              String[] output_value = no_blank.split("output|=|;");
-                
-               output(output_value[2]);
-                 
-              }  
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
-              
+              //operations 
+              if(statements[line].contains("+")||statements[line].contains("-")
+                      ||statements[line].contains("*")||statements[line].contains("/")){
+  
+                //remove whitespaces
+                String no_blank = statements[line].replaceAll("\\s+", "");
+                String no_semi = no_blank.replaceAll(";", "");
+                System.out.println("\n"+no_semi); 
+
+                //Split string line with '+,-,*,/,='
+                String[]operations = no_semi.split("(?=\\+)|(?<=\\+)|"
+                        + "(?=\\-)|(?<=\\-)|"
+                        + "(?=\\*)|(?<=\\*)|"
+                        + "(?=\\/)|(?<=\\/)|"
+                        + "(?=\\=)|(?<=\\=)");
+ 
+                for(int n = 0; n < operations.length;n++){
+                //paranthesis    
              
+                //process operation per character split 
+                    if(operations[n].contains("+")||operations[n].contains("-")||
+                            operations[n].contains("*")||operations[n].contains("/")){
+                       String op = operations[n];
+                        //Behind of op
+                        if(cnt_back==0){
+                            if(check_var(operations[n-1]).equals("number")){
+                                if(prev==2147483647){
+                                    prev=Integer.parseInt(operations[n-1]);
+                                }else{
+                                    get_prev(Integer.parseInt(operations[n-1]),op);
+                                }
+                            }else{
+                                operations(operations[n-1],op);
+                            }
+                        } cnt_back=+1;
+                        //In front of op
+                            if(check_var(operations[n+1]).equals("number")){
+                                if(prev==2147483647){
+                                    prev=Integer.parseInt(operations[n+1]);
+                                }else{
+                                   get_prev(Integer.parseInt(operations[n+1]),op);
+                                }
+                            }else{
+                                    operations(operations[n+1],op);
+                            }
+                            
+                      //at the last item, assign value to variable      
+                    }else if(n==operations.length-1){   
+                          operations(operations[0],"=");
+                    }            
+               }  
+              }         
         }
-        
-        //}
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // TODO add your handling code here:
+       //} 
     }//GEN-LAST:event_run_btnMouseClicked
 
     /**
