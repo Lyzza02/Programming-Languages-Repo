@@ -320,7 +320,8 @@ public class GooGooLang extends javax.swing.JFrame {
                   var(var_value[1],Integer.parseInt(var_value[2]));
                 else
                   var(var_value[1],0);
-             }            
+             }
+             
              //Input Keyword
               if(statements[line].contains("input")){
                 input_count+=1;    
