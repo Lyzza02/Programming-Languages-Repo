@@ -72,6 +72,30 @@ public class GooGooLang extends javax.swing.JFrame {
         output_code.setForeground(Color.PINK);
         output_code.setBackground(Color.BLACK);
    }
+    
+    //Checking if the parenthesis is balance or not
+    public static Boolean balanceParenthesis(String word){
+        Stack<String> stack = new Stack<>();
+        for(int i=0; i < word.length(); i++){
+            if (word.charAt(i) == '('){
+                stack.push("(");
+            } else if (word.charAt(i) == ')'){
+                ////checking the contents of a stack
+                if (stack.isEmpty()){
+                    return false;
+                } else {
+                    stack.pop();
+                }
+            } 
+        }
+        
+        //checking the contents of a stack
+        if (stack.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
          
     public void output(String var_name){
     //if(typechecking){
@@ -184,14 +208,11 @@ public class GooGooLang extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(run_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 32, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(run_btn, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
