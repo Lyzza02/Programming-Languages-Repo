@@ -5,6 +5,12 @@
  */
 package finals;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  *
  * @author 10017
@@ -17,7 +23,10 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
     public LexicalAnalyzer() {
         initComponents();
     }
-
+    GooGooLang lang;
+    public void setInstance(GooGooLang lang) {
+        this.lang = lang;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -37,6 +46,11 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
 
         jPanel2.setBackground(new java.awt.Color(135, 67, 86));
 
@@ -55,6 +69,11 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
         jTabbedPane3.addTab("GooAnalyzer", jScrollPane1);
 
         jButton2.setText("Back to GooGooGnomes");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -117,7 +136,101 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+     static HashMap<String, String> tokenMap = new HashMap<>();
+    static ArrayList<String> tokenResult = new ArrayList<>();
+    static boolean commentState = false;
+    static String comments = "";
+    static int varCount;
 
+    public static void identifyToken(String s) {
+        Pattern pattern;
+        Matcher matcher;
+
+        if (commentState == true && !s.equals("*/")) {
+            tokenResult.add(String.format("%s : %s", s, "Comment"));
+        } else if (s.equals("/*") || s.equals("*/")) {
+            tokenResult.add(String.format("%s : %s", s, tokenMap.get(s)));
+            commentState = (s.equals("/*")) ? true : false;
+
+            if (commentState == false) {
+                tokenResult.add(String.format("%s : %s", comments, "Comment"));
+            }
+        } else if (isNumeric(s)) {
+            tokenResult.add(String.format("%s : %s", s, "Numeric / Integer"));
+        } else if (tokenMap.containsKey(s)) {
+            tokenResult.add(String.format("%s : %s", s, tokenMap.get(s)));
+            if (s.equals("var")) {
+                varCount++;
+            }
+        } else if (varCount > 0) {
+            pattern = Pattern.compile("[a-z][a-zA-Z0-9_]*");
+            matcher = pattern.matcher(s);
+            boolean matchFound = matcher.find();
+            if (matchFound) {
+                tokenResult.add(String.format("%s : %s", s, "Identifier"));
+                varCount--;
+            }
+
+        }
+    }
+
+    public static boolean isNumeric(String s) {
+        try {
+            Integer.parseInt(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public static void analyzer(String s) {
+        String[] statements = s.split("((?<=\\()|(?=\\))|(\\s+)|(?<=;)|(?=;))");
+        for (String x : statements) {
+            identifyToken(x);
+        }
+    }
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+        tokenMap.put("var", "Keyword");
+        tokenMap.put("input", "Keyword");
+        tokenMap.put("output", "Keyword");
+        tokenMap.put("+", "Operator");
+        tokenMap.put("-", "Operator");
+        tokenMap.put("*", "Operator");
+        tokenMap.put("/", "Operator");
+        tokenMap.put("=", "Operator");
+        tokenMap.put("/*", "Comment");
+        tokenMap.put("*/", "Comment");
+        tokenMap.put("(", "Parentheses");
+        tokenMap.put(")", "Parentheses");
+        tokenMap.put(";", "Symbol");
+        String myObj = new GooGooLang().input_code.getText();
+        System.out.println(myObj);
+        Scanner myReader = new Scanner(myObj);
+        while (myReader.hasNextLine()) {
+            String data = myReader.nextLine();
+            if (commentState == true) {
+                identifyToken(data);
+            } else {
+                analyzer(data);
+            }
+        }
+        myReader.close();
+
+        for (String x : tokenResult) {
+            anaylzer.append(x + "\n");
+        }
+    }//GEN-LAST:event_formWindowOpened
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+     this.setVisible(false);
+       /* new GooGooLang().setVisible(true);*/
+        new GooGooLang().setInstance(this);
+    }//GEN-LAST:event_jButton2ActionPerformed
+   // GEN-FIRST:event_formWindowOpened
+       
+    
     /**
      * @param args the command line arguments
      */
@@ -154,7 +267,7 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea anaylzer;
+    public javax.swing.JTextArea anaylzer;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
@@ -163,4 +276,6 @@ public class LexicalAnalyzer extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane3;
     // End of variables declaration//GEN-END:variables
+
+   
 }

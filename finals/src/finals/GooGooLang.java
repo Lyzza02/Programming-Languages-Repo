@@ -4,6 +4,11 @@
  * and open the template in the editor.
  */
 package finals;
+import static finals.LexicalAnalyzer.analyzer;
+import static finals.LexicalAnalyzer.commentState;
+import static finals.LexicalAnalyzer.identifyToken;
+import static finals.LexicalAnalyzer.tokenMap;
+import static finals.LexicalAnalyzer.tokenResult;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -23,12 +28,16 @@ import javax.swing.text.Highlighter;
  */
 @SuppressWarnings("unchecked")
 public class GooGooLang extends javax.swing.JFrame {
-
+     LexicalAnalyzer l = new LexicalAnalyzer();
     /**
      * Creates new form GooGooLang
      */
     public GooGooLang() {
         initComponents();
+    }
+     LexicalAnalyzer lang;
+    public void setInstance(LexicalAnalyzer lang) {
+        this.lang = lang;
     }
 /*
  *    START OF GLOBAL  VARIABLE DECLARATIONS  
@@ -42,6 +51,7 @@ public class GooGooLang extends javax.swing.JFrame {
    int var_count=0;
    //Declare Global string data for output_code
    public static int prev=2147483647;
+  
    
 /*
  *    END OF GLOBAL  VARIABLE DECLARATIONS  
@@ -72,6 +82,30 @@ public class GooGooLang extends javax.swing.JFrame {
         output_code.setForeground(Color.PINK);
         output_code.setBackground(Color.BLACK);
    }
+    
+    //Checking if the parenthesis is balance or not
+    public static Boolean balanceParenthesis(String word){
+        Stack<String> stack = new Stack<>();
+        for(int i=0; i < word.length(); i++){
+            if (word.charAt(i) == '('){
+                stack.push("(");
+            } else if (word.charAt(i) == ')'){
+                ////checking the contents of a stack
+                if (stack.isEmpty()){
+                    return false;
+                } else {
+                    stack.pop();
+                }
+            } 
+        }
+        
+        //checking the contents of a stack
+        if (stack.isEmpty()){
+            return true;
+        } else {
+            return false;
+        }
+    }
          
     public void output(String var_name){
     //if(typechecking){
@@ -103,16 +137,42 @@ public class GooGooLang extends javax.swing.JFrame {
        }
    return prev;
    }
+   
+    public static String check_var(String text) {
+        try {
+            Integer.parseInt(text);
+            return "number";
+          } catch (NumberFormatException e) {
+            return text;
+        }
+    }
+   
+    //parenthesis
+    public int para(int para){
+    
+    return para;
+    }
+   
     //operations
-    public void operations(String var_name,String op){
+    public void operations(String var_name,String var_name2,String op){
       int cur = Integer.parseInt(dictionary.get(var_name).toString());
       System.out.println("prev : "+prev);  
       System.out.println(var_name+" : "+cur);  
 
         if(op.equals("=")){
-               System.out.println(var_name+" : "+prev);  
-               dictionary.put(var_name,prev);
-
+               if(var_name2.equals("0_val")){
+                    dictionary.put(var_name,prev);
+                    System.out.println(var_name+" : "+prev); 
+               }else{
+                 if(check_var(var_name2).equals("number")){
+                        dictionary.put(var_name,Integer.parseInt(var_name2));
+                        System.out.println(var_name+" =  "+ dictionary.get(var_name)); 
+                 }else{
+                        dictionary.put(var_name,Integer.parseInt(dictionary.get(var_name2).toString()));
+                        System.out.println(var_name+" =  "+ dictionary.get(var_name)); 
+                 }
+               }
+               
            }else{   
                 if(prev==2147483647){
                     prev =  cur;  
@@ -122,15 +182,46 @@ public class GooGooLang extends javax.swing.JFrame {
            }      
        }
     
-    public static String check_var(String text) {
-        try {
-            Integer.parseInt(text);
-            return "number";
-          } catch (NumberFormatException e) {
-            return text;
-        }
-    }
+    //Comment *removes* comments to not be processed
+     public static String[] rm_comment(String[] arr, int index)
+    {
  
+        // If the array is empty
+        // or the index is not in array range
+        // return the original array
+        if (arr == null || index < 0
+            || index >= arr.length) {
+ 
+            return arr;
+        }
+ 
+        // Create another array of size one less
+        String[] anotherArray = new String[arr.length - 1];
+ 
+        // Copy the elements except the index
+        // from original array to the other array
+        for (int i = 0, k = 0; i < arr.length; i++) {
+ 
+            // if the index is
+            // the removal element index
+            if (i == index) {
+                continue;
+            }
+ 
+            // if the index is not
+            // the removal element index
+            anotherArray[k++] = arr[i];
+        }
+ 
+        // return the resultant array
+        return anotherArray;
+    }
+     
+   
+     
+     
+     
+     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -147,13 +238,16 @@ public class GooGooLang extends javax.swing.JFrame {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jScrollPane2 = new javax.swing.JScrollPane();
         output_code = new javax.swing.JTextArea();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
+        jButton2 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel3.setBackground(new java.awt.Color(135, 67, 86));
@@ -173,7 +267,6 @@ public class GooGooLang extends javax.swing.JFrame {
 
         input_code.setColumns(20);
         input_code.setRows(5);
-        input_code.setText("var a = 2;\nvar c = 2;\nvar b = 2;\nvar math; \nmath = a + b + c;\noutput math;");
         jScrollPane1.setViewportView(input_code);
 
         jTabbedPane3.addTab("GooInput", jScrollPane1);
@@ -184,14 +277,11 @@ public class GooGooLang extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(run_btn, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 32, Short.MAX_VALUE)))
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(run_btn, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE)
+                    .addComponent(jTabbedPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -206,7 +296,14 @@ public class GooGooLang extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(246, 137, 137));
 
+        jButton1.setBackground(new java.awt.Color(255, 204, 204));
+        jButton1.setForeground(new java.awt.Color(255, 102, 102));
         jButton1.setText("Open Lexial Analyzer");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         output_code.setEditable(false);
         output_code.setBackground(new java.awt.Color(0, 0, 0));
@@ -217,11 +314,14 @@ public class GooGooLang extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("GooOutput", jScrollPane2);
 
-        jTextArea3.setColumns(20);
-        jTextArea3.setRows(5);
-        jScrollPane3.setViewportView(jTextArea3);
-
-        jTabbedPane2.addTab("GooErrors", jScrollPane3);
+        jButton2.setBackground(new java.awt.Color(204, 204, 255));
+        jButton2.setForeground(new java.awt.Color(153, 153, 255));
+        jButton2.setText("Open Syntax Analyzer");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -231,23 +331,23 @@ public class GooGooLang extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(148, 148, 148))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane1)
-                    .addComponent(jTabbedPane2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                .addGap(83, 83, 83))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(83, 83, 83)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addGap(57, 57, 57)
+                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel2.setBackground(new java.awt.Color(222, 182, 171));
@@ -288,9 +388,13 @@ public class GooGooLang extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void run_btnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_run_btnMouseClicked
+
  output_code.setText("\\={ GooGooLang }=/\n\n");
  prev=2147483647;
  int cnt_back=0;
+ int para_num=2147483647;
+ int cnt = 0;
+ int cnt_line=0;
          //if(typechecking){
        
         String string = input_code.getText();
@@ -298,18 +402,30 @@ public class GooGooLang extends javax.swing.JFrame {
         //Split string line with ';'
         String[] statements = string.split("(?=;)");
         
-        for (int line = 0; line<statements.length;line++) {
+        
+        for (int lines = 0; lines<statements.length-1;lines++) {
             
+            if(statements[lines].contains("/*")){
+                int line = lines;
+           
+                 do {
+                     statements = rm_comment(statements,lines);
+                    line++;
+                 } while(!statements[lines].contains("*/")&&line<statements.length-1);
+                  statements = rm_comment(statements,lines);
+            }
+       }      
+        String [] statement = statements;
+        for (int line = 0; line<statement.length-1;line++) {
+                
             
-            System.out.println(statements[line]);
-             
             //Var Keyword
-             if(statements[line].contains("var")){
+             if(statement[line].contains("var")){
                 //add 1 & print variable count   
                 var_count+=1;
                 System.out.println("variable# "+var_count);
                 //remove whitespaces
-                String no_blank = statements[line].replaceAll("\\s+", "");  
+                String no_blank = statement[line].replaceAll("\\s+", "");  
                 String no_semi = no_blank.replaceAll(";", "");
                 
                 System.out.println(no_blank); 
@@ -323,13 +439,13 @@ public class GooGooLang extends javax.swing.JFrame {
              }
              
              //Input Keyword
-              if(statements[line].contains("input")){
+             if(statement[line].contains("input")){
                 input_count+=1;    
                 //add 1 annd print input count    
                 System.out.println("input# "+input_count);
 
                 //remove whitespaces
-                String no_blank = statements[line].replaceAll("\\s+", "");  
+                String no_blank = statement[line].replaceAll("\\s+", "");  
                 System.out.println(no_blank); 
 
                 //Removes 'input', '=', and ';'
@@ -348,9 +464,9 @@ public class GooGooLang extends javax.swing.JFrame {
               } 
               
               //output keyword
-              if(statements[line].contains("output")){
+             if(statement[line].contains("output")){
                 //remove whitespaces
-                String no_blank = statements[line].replaceAll("\\s+", "");  
+                String no_blank = statement[line].replaceAll("\\s+", "");  
                 System.out.println(no_blank); 
 
                 //Removes 'output', '=', and ';'
@@ -359,12 +475,16 @@ public class GooGooLang extends javax.swing.JFrame {
                  output(output_value[2]);
               }               
               
-              //operations 
-              if(statements[line].contains("+")||statements[line].contains("-")
-                      ||statements[line].contains("*")||statements[line].contains("/")){
+             //operations 
+
+             
+            if(!statement[line].contains("var")){ 
+            if(statement[line].contains("+")||statement[line].contains("-")
+                      ||statement[line].contains("*")||statement[line].contains("/")
+                    ||statement[line].contains("=")){
   
                 //remove whitespaces
-                String no_blank = statements[line].replaceAll("\\s+", "");
+                String no_blank = statement[line].replaceAll("\\s+", "");
                 String no_semi = no_blank.replaceAll(";", "");
                 System.out.println("\n"+no_semi); 
 
@@ -372,16 +492,68 @@ public class GooGooLang extends javax.swing.JFrame {
                 String[]operations = no_semi.split("(?=\\+)|(?<=\\+)|"
                         + "(?=\\-)|(?<=\\-)|"
                         + "(?=\\*)|(?<=\\*)|"
+                        + "(?=\\()|(?<=\\()|"
+                        + "(?=\\))|(?<=\\))|"
                         + "(?=\\/)|(?<=\\/)|"
                         + "(?=\\=)|(?<=\\=)");
- 
-                for(int n = 0; n < operations.length;n++){
-                //paranthesis    
-             
-                //process operation per character split 
-                    if(operations[n].contains("+")||operations[n].contains("-")||
-                            operations[n].contains("*")||operations[n].contains("/")){
-                       String op = operations[n];
+                     
+                
+                for (int n = 0; n<operations.length;n++) {
+                 String op = operations[n];
+                 System.out.println(operations.length);
+          
+                 
+                 if(operations.length==3&&op.matches("=")){
+                    System.out.println(operations.length+" : "+operations[n-1]+" : "+operations[n+1]+" : "+op);
+                    operations(operations[n-1],operations[n+1],"=");
+                 }  
+                 
+                    else if(operations[n].contains("(")){
+                                
+                          do {
+                            
+                          if(operations[n].equals("+")||operations[n].equals("-")||
+                           operations[n].equals("*")||operations[n].equals("/")){ 
+                               System.out.println("para op : "+op);
+                        //Behind of op
+                        if(cnt_back==0){
+                            if(check_var(operations[n-1]).equals("number")){
+                                if(prev==2147483647){
+                                    prev=Integer.parseInt(operations[n-1]);
+                                }else{
+                                    get_prev(Integer.parseInt(operations[n-1]),operations[n]);
+                                }
+                            }else{
+                                operations(operations[n-1],"0_val",operations[n]);
+                            }
+                        } cnt_back=+1;
+                        //In front of op
+                            if(check_var(operations[n+1]).equals("number")){
+                                if(prev==2147483647){
+                                    prev=Integer.parseInt(operations[n+1]);
+                                }else{
+                                   get_prev(Integer.parseInt(operations[n+1]),operations[n]);
+                                }
+                            }else{
+                                    operations(operations[n+1],"0_val",operations[n]);
+                            }
+                            
+                            //at the last item, assign value to variable      
+                          }else if(operations[n].contains(")")){
+                                operations(operations[0],"0_val","=");
+                                 para(prev);
+                                }  
+                             n++;
+                          } while(!operations[n].contains(")"));
+                         
+                          System.out.println("para : "+para(prev));
+                    }
+                    
+                    else if(operations[n].contains("+")||operations[n].contains("-")||
+                           operations[n].contains("*")||operations[n].contains("/")){
+                        
+                        System.out.println(para(prev));
+                          
                         //Behind of op
                         if(cnt_back==0){
                             if(check_var(operations[n-1]).equals("number")){
@@ -391,7 +563,7 @@ public class GooGooLang extends javax.swing.JFrame {
                                     get_prev(Integer.parseInt(operations[n-1]),op);
                                 }
                             }else{
-                                operations(operations[n-1],op);
+                                operations(operations[n-1],"0_val",op);
                             }
                         } cnt_back=+1;
                         //In front of op
@@ -402,18 +574,75 @@ public class GooGooLang extends javax.swing.JFrame {
                                    get_prev(Integer.parseInt(operations[n+1]),op);
                                 }
                             }else{
-                                    operations(operations[n+1],op);
+                                    operations(operations[n+1],"0_val",op);
                             }
                             
                       //at the last item, assign value to variable      
-                    }else if(n==operations.length-1){   
-                          operations(operations[0],"=");
-                    }            
-               }  
-              }         
+                    }else if(n==operations.length-1&&operations.length!=3){
+                          operations(operations[0],"0_val","=");
+                          }  
+                   }   
+           
+            }
+         }
+       }  
+        
+        
+                 
+        LexicalAnalyzer l = new LexicalAnalyzer();
+        tokenMap.put("var", "Keyword");
+        tokenMap.put("input", "Keyword");
+        tokenMap.put("output", "Keyword");
+        tokenMap.put("+", "Operator");
+        tokenMap.put("-", "Operator");
+        tokenMap.put("*", "Operator");
+        tokenMap.put("/", "Operator");
+        tokenMap.put("=", "Operator");
+        tokenMap.put("/*", "Comment");
+        tokenMap.put("*/", "Comment");
+        tokenMap.put("(", "Parentheses");
+        tokenMap.put(")", "Parentheses");
+        tokenMap.put(";", "Symbol");
+        l.anaylzer.setText("");
+        l.tokenResult.clear();
+        String myObj = input_code.getText();
+        System.out.println(myObj);
+        Scanner myReader = new Scanner(myObj);
+        while (myReader.hasNextLine()) {
+            String data = myReader.nextLine();
+            if (l.commentState == true) {
+                l.identifyToken(data);
+            } else {
+                l.analyzer(data);
+            }
         }
-       //} 
+        myReader.close();
+        for (String x : l.tokenResult) {
+            l.anaylzer.append(x + "\n");
+        }
+        
+        
+
+        
+        
     }//GEN-LAST:event_run_btnMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+/*        this.setVisible(false);*/
+         new LexicalAnalyzer().setVisible(true);
+         System.out.println(input_code.getText());
+        l.setInstance(this);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        // TODO add your handling code here:
+    }//GEN-LAST:event_formWindowOpened
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+LexerFinal obj=new LexerFinal();
+    String[] args = {};
+    obj.main(args);          // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -451,8 +680,9 @@ public class GooGooLang extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea input_code;
+    public javax.swing.JTextArea input_code;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
@@ -460,11 +690,8 @@ public class GooGooLang extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
-    private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextArea output_code;
     private javax.swing.JButton run_btn;
     // End of variables declaration//GEN-END:variables
